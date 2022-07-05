@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 function checkTimeFormat (time) {
 	const regexp = /(\d{1,2}):(\d{2})\s?([AP]M)?/gi;
@@ -62,6 +63,50 @@ module.exports = {
 				.setDescription('The time zone of the timestamp, in hours ahead or behind UTC. Defaults to 0.')
 				.setRequired(false)),
 	async execute(interaction) {
+		const row = new MessageActionRow()
+			.addComponents(
+					new MessageSelectMenu()
+						.setCustomId('style')
+						.setPlaceholder('Timestamp Style')
+						.addOptions([
+							{
+								label: 't',
+								description: 'Short Time',
+								value: 't',
+							},
+							{
+								label: 'T',
+								description: 'Long Time',
+								value: 'T',
+							},
+							{
+								label: 'd',
+								description: 'Short Date',
+								value: 'd',
+							},
+							{
+								label: 'D',
+								description: 'Long Date',
+								value: 'D',
+							},
+							{
+								label: 'f',
+								description: 'Short Date/Time (Default)',
+								value: 'f',
+							},
+							{
+								label: 'F',
+								description: 'Long Date/Time',
+								value: 'F',
+							},
+							{
+								label: 'R',
+								description: 'Relative Time',
+								value: 'R',
+							},
+						]),
+				);
+
 		var timestamp = new Date(Date.now())
 
 		const timeString = interaction.options.getString('time');
@@ -85,7 +130,6 @@ module.exports = {
 
 		timestamp = Date.UTC(year, month - 1, date, hours - timezoneHours, minutes - timezoneMinutes) / 1000;
 
-		interaction.reply(`<t:${timestamp}> \n \`<t:${timestamp}>\` `);
-
+		interaction.reply({ content: `<t:${timestamp}> \n \`<t:${timestamp}>\` `, components: [row] });
 	},
 };
