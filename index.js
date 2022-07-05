@@ -8,6 +8,19 @@ const { token } = require('./config.json');
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
+
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -19,26 +32,26 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
-// When the client is ready, run this code (only once)
-client.once('ready', () => {
-	console.log('Ready!');
-});
-
 // Login to Discord with your client's token
 client.login(token);
 
+// When the client is ready, run this code (only once)
+// client.once('ready', () => {
+// 	console.log('Ready!');
+// });
+
 // Command handling
-client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+// client.on('interactionCreate', async interaction => {
+// 	if (!interaction.isCommand()) return;
 
-	const command = client.commands.get(interaction.commandName);
+// 	const command = client.commands.get(interaction.commandName);
 
-	if (!command) return;
+// 	if (!command) return;
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'we did a fucky wucky ligma balls', ephemeral: true });
-	}
-});
+// 	try {
+// 		await command.execute(interaction);
+// 	} catch (error) {
+// 		console.error(error);
+// 		await interaction.reply({ content: 'we did a fucky wucky ligma balls', ephemeral: true });
+// 	}
+// });
