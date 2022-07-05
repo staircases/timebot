@@ -20,7 +20,7 @@ function checkTimeFormat (time) {
 };
 
 function checkTimeZoneFormat (timezone) {
-	const regexp = /UTC([+-])(\d{1,2}):(\d{2})/gi;
+	const regexp = /([+-])(\d{1,2}):(\d{2})/gi;
 	const matched = [...timezone.matchAll(regexp)];
 
 	if (matched.length == 0) {
@@ -45,15 +45,15 @@ module.exports = {
 			option.setName('time')
 				.setDescription('The time of the timestamp.')
 				.setRequired(true))
-		.addStringOption(option =>
+		.addIntegerOption(option =>
 			option.setName('date')
 				.setDescription('The date of the timestamp. Defaults to today.')
 				.setRequired(false))
-		.addStringOption(option =>
+		.addIntegerOption(option =>
 			option.setName('month')
-				.setDescription('The month of the timestamp. Defaults to this month.')
+				.setDescription('The month (in numbers) of the timestamp. Defaults to this month.')
 				.setRequired(false))
-		.addStringOption(option =>
+		.addIntegerOption(option =>
 			option.setName('year')
 				.setDescription('The year of the timestamp. Defaults to this year.')
 				.setRequired(false))
@@ -65,21 +65,27 @@ module.exports = {
 		var timestamp = new Date(Date.now())
 
 		const timeString = interaction.options.getString('time');
-		const timezoneString = interaction.options.getString('timezone') ?? 'UTC+0:00';
+		const timezoneString = interaction.options.getString('timezone') ?? '+0:00';
 
 		const [hours, minutes] = checkTimeFormat(timeString);
 		const [timezoneHours, timezoneMinutes] = checkTimeZoneFormat(timezoneString);
 
-		if (!hours) {
+		if (!hours && hours !== 0) {
 			interaction.reply(`Your time is formatted incorrectly! Format it as \`XX:XX AM/PM\`.`);
 			return;
 		}
-		if (!timezoneHours) {
-			interaction.reply(`Your timezone is formatted incorreectly! Format it as \`UTC+/-XX:XX\`.`);
+		if (!timezoneHours && timezoneHours !== 0) {
+			interaction.reply(`Your timezone is formatted incorreectly! Format it as \`+/-XX:XX\`.`);
 			return;
 		}
 
-		interaction.reply(`All checks passed :)`);
+		const date = interaction.options.getInteger('date') ?? timestamp.getDate();
+		const month = interaction.options.getInteger('month') ?? timestamp.getMonth() + 1;
+		const year = interaction.options.getInteger('year') ?? timestamp.getFullYear();
+
+		timestamp = Date.UTC(year, month - 1, date, hours - timezoneHours, minutes - timezoneMinutes) / 1000;
+
+		interaction.reply(`<t:${timestamp}> \n \`<t:${timestamp}>\` `);
 
 	},
 };
