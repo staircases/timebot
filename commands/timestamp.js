@@ -8,7 +8,7 @@ function checkTimeFormat (time) {
 	if (matched.length == 0) {
 		return [false, false];
 	} else {
-		const hours = Math.min(parseInt(matched[0][1]), 24);
+		const hours = Math.min(parseInt(matched[0][1]), 23);
 		const minutes = Math.min(parseInt(matched[0][2]), 59);
 
 		if (matched[0][3] === undefined || matched[0][3].toUpperCase() == 'AM') {
@@ -28,7 +28,7 @@ function checkTimeZoneFormat (timezone) {
 		return [false, false];
 	} else {
 		const sign = (matched[0][1] == "+") ? 1 : -1;
-		const hours = Math.min(parseInt(matched[0][2]), 24);
+		const hours = Math.min(parseInt(matched[0][2]), 23);
 		const minutes = Math.min(parseInt(matched[0][3]), 59);
 		return [hours * sign, minutes];
 	}
@@ -130,6 +130,22 @@ module.exports = {
 
 		timestamp = Date.UTC(year, month - 1, date, hours - timezoneHours, minutes - timezoneMinutes) / 1000;
 
-		interaction.reply({ content: `<t:${timestamp}> \n \`<t:${timestamp}>\` `, components: [row] });
+		await interaction.reply({ content: `<t:${timestamp}:f> \n \`<t:${timestamp}:f>\` `, components: [row] });
+		const message = await interaction.fetchReply();
+
+		const regexp = /:[tTdDfFR]/g;
+
+		const collector = message.createMessageComponentCollector({ componentType: 'SELECT_MENU', time:15000 });
+		collector.on('collect', i => {
+			if (!i.isSelectMenu()) return;
+			console.log(i.values[0]);
+			i.update({ content: message.content.replaceAll(regexp, `:${i.values[0]}`) });
+		});
+
+		collector.on('end', collected => {
+			console.log('Ended collection');
+			row.components[0].disabled = true;
+			interaction.editReply({ components: [row] });
+		});
 	},
 };
