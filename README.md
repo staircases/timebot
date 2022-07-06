@@ -1,7 +1,7 @@
 # timebot
 A small Discord bot that provides a utility for creating formatted Unix timestamps for Discord.
 
-~~Add this bot to your server!~~ **SOON**
+[Add this bot to your server!](https://discord.com/api/oauth2/authorize?client_id=992426201488576512&permissions=0&scope=bot%20applications.commands)
 
 ## Usage
 timebot only provides one command: `/timestamp {time} [date] [month] [year] [timezone]`
