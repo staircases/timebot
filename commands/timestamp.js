@@ -34,10 +34,6 @@ function checkTimeZoneFormat (timezone) {
 	}
 };
 
-function parseTime (time) {
-
-};
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('timestamp')
