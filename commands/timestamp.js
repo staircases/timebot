@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { checkTimeFormat, checkTimeZoneFormat } = require('../helper_modules/timehelper.js')
 
 function checkTimeFormat (time) {
 	const regexp = /(\d{1,2}):(\d{2})\s?([AP]M)?/gi;
