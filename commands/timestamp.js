@@ -2,10 +2,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const { checkTimeFormat, checkTimeZoneFormat } = require('../helper_modules/timehelper.js');
 
-function parseTime (time) {
-
-};
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('timestamp')
