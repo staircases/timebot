@@ -46,6 +46,6 @@ module.exports = {
 		const resMinutes = (minutes + minutesDiff) % 60;
 
 		await interaction.reply({content: `${hours}:${minutes} at ${fTimezoneHours}:${fTimezoneMinutes} is ${resHours}:${resMinutes} at ${lTimezoneHours}:${lTimezoneMinutes}.`})
-		//still needs proper sign on the timezone but this will do for now
+		//incorrectly formatted right now, fix that
 		},
 };

@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
 const { checkTimeFormat, checkTimeZoneFormat } = require('../helper_modules/timehelper.js');
 
 module.exports = {
@@ -27,9 +26,9 @@ module.exports = {
 				.setDescription('The time zone of the timestamp, in hours ahead or behind UTC. Defaults to 0.')
 				.setRequired(false)),
 	async execute(interaction) {
-		const row = new MessageActionRow()
+		var row = new ActionRowBuilder()
 			.addComponents(
-					new MessageSelectMenu()
+					new StringSelectMenuBuilder()
 						.setCustomId('style')
 						.setPlaceholder('Timestamp Style')
 						.addOptions([
@@ -99,17 +98,17 @@ module.exports = {
 
 		const regexp = /:[tTdDfFR]/g;
 
-		const collector = message.createMessageComponentCollector({ componentType: 'SELECT_MENU', time:15000 });
+		const collector = message.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time:15000 });
 		collector.on('collect', i => {
-			if (!i.isSelectMenu()) return;
+			if (!i.isStringSelectMenu()) return;
 			console.log(i.values[0]);
 			i.update({ content: message.content.replaceAll(regexp, `:${i.values[0]}`) });
 		});
 
 		collector.on('end', collected => {
 			console.log('Ended collection');
-			row.components[0].disabled = true;
-			interaction.editReply({ components: [row] });
+			row.components[0].setDisabled = true;
+			interaction.editReply({ components: [] });
 		});
 	},
 };
