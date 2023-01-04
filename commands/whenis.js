@@ -10,17 +10,17 @@ module.exports = {
 				.setDescription('The time to be translated')
 				.setRequired(true))
 		.addStringOption(option =>
-			option.setName('foreign timezone')
+			option.setName('foreign-timezone')
 				.setDescription('The timezone of the inputted time as hours ahead or behind UTC. Defaults to 0.')
 				.setRequired(false))
 		.addStringOption(option =>
-			option.setName('local timezone')
+			option.setName('local-timezone')
 				.setDescription('Your local timezone as hours ahead or behind UTC. Defaults to 0.')
 				.setRequired(false)),
 	async execute(interaction) {
 		const timeString = interaction.options.getString('time');
-		const fTimezone = interaction.options.getString('foreign timezone') ?? '+0:00';
-		const lTimezone = interaction.options.getString('local timezone') ?? '+0:00';
+		const fTimezone = interaction.options.getString('foreign-timezone') ?? '+0:00';
+		const lTimezone = interaction.options.getString('local-timezone') ?? '+0:00';
 
 		const [hours, minutes] = checkTimeFormat(timeString);
 		const [fTimezoneHours, fTimezoneMinutes] = checkTimeZoneFormat(fTimezone);
@@ -39,5 +39,13 @@ module.exports = {
 			return;
 		}
 
+		const hoursDiff = lTimezoneHours - fTimezoneHours + Math.trunc( (lTimezoneMinutes - fTimezoneMinutes) / 60 );
+		const minutesDiff = (lTimezoneMinutes - fTimezoneMinutes) % 60;
+
+		const resHours = ( (hours + hoursDiff) + Math.trunc( (minutes + minutesDiff) / 60 ) ) % 24;
+		const resMinutes = (minutes + minutesDiff) % 60;
+
+		await interaction.reply({content: `${hours}:${minutes} at ${fTimezoneHours}:${fTimezoneMinutes} is ${resHours}:${resMinutes} at ${lTimezoneHours}:${lTimezoneMinutes}.`})
+		//still needs proper sign on the timezone but this will do for now
 		},
 };
