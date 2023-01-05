@@ -39,15 +39,14 @@ module.exports = {
 			return;
 		}
 
-		const hoursDiff = lTimezoneHours - fTimezoneHours + Math.trunc( (lTimezoneMinutes - fTimezoneMinutes) / 60 );
-		const minutesDiff = ( ( (lTimezoneMinutes - fTimezoneMinutes) % 60 ) + 60 ) % 60;
+		const hoursDiff = lTimezoneHours - fTimezoneHours;
+		const minutesDiff = lTimezoneMinutes - fTimezoneMinutes;
 
-		const rollOver = Math.floor( ( (hours + hoursDiff) + Math.trunc( (minutes + minutesDiff) / 60 ) ) / 24 );
-		const rollOverStr = rollOver != 0 ? `${Math.abs(rollOver)} day${Math.abs(rollOver) > 1 ? 's' : ''} ${rollOver >= 0 ? 'ahead' : ''}${rollOver < 0 ? 'behind' : ''}` : '';
-		const resHours = ( ( ( (hours + hoursDiff) + Math.trunc( (minutes + minutesDiff) / 60 ) ) % 24 ) + 24 ) % 24;
+		const rollOver = Math.floor( ( hours + hoursDiff + Math.floor( (minutes + minutesDiff) / 60 ) ) / 24  );
+		const rollOverStr = rollOver != 0 ? `${Math.abs(rollOver)} day${Math.abs(rollOver) > 1 ? 's' : ''} ${rollOver >= 0 ? 'ahead ' : ''}${rollOver < 0 ? 'behind ' : ''}` : '';
+		const resHours = ( ( (hours + hoursDiff + Math.floor( (minutes + minutesDiff) / 60 ) ) % 24 ) + 24 ) % 24;
 		const resMinutes = ( ( (minutes + minutesDiff) % 60 ) + 60 ) % 60;
 
-		await interaction.reply({content: `${timeString} at ${fTimezone} is ${resHours < 10 ? '0' : ''}${resHours}:${resMinutes < 10 ? '0' : ''}${resMinutes} ${rollOverStr} at ${lTimezone}.`})
-		//incorrectly formatted right now, fix that
+		await interaction.reply({content: `${timeString} at ${fTimezone} is ${resHours < 10 ? '0' : ''}${resHours}:${resMinutes < 10 ? '0' : ''}${resMinutes} ${rollOverStr}at ${lTimezone}.`})
 	},
 };
