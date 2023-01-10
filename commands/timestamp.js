@@ -1,38 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
-
-function checkTimeFormat (time) {
-	const regexp = /(\d{1,2}):(\d{2})\s?([AP]M)?/gi;
-	const matched = [...time.matchAll(regexp)];
-
-	if (matched.length == 0) {
-		return [false, false];
-	} else {
-		const hours = Math.min(parseInt(matched[0][1]), 23);
-		const minutes = Math.min(parseInt(matched[0][2]), 59);
-
-		if (matched[0][3] === undefined || matched[0][3].toUpperCase() == 'AM') {
-			return [hours, minutes];
-		} else if (matched[0][3].toUpperCase() == 'PM') {
-			return [Math.min(hours + 12, 24), minutes];
-		}
-		
-	}
-};
-
-function checkTimeZoneFormat (timezone) {
-	const regexp = /([+-])(\d{1,2}):(\d{2})/gi;
-	const matched = [...timezone.matchAll(regexp)];
-
-	if (matched.length == 0) {
-		return [false, false];
-	} else {
-		const sign = (matched[0][1] == "+") ? 1 : -1;
-		const hours = Math.min(parseInt(matched[0][2]), 23);
-		const minutes = Math.min(parseInt(matched[0][3]), 59);
-		return [hours * sign, minutes];
-	}
-};
+const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
+const { checkTimeFormat, checkTimeZoneFormat } = require('../helper_modules/timehelper.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -63,9 +30,9 @@ module.exports = {
 				.setDescription('Whether or not the bot\'s response should be visible to only you.')
 				.setRequired(false)),
 	async execute(interaction) {
-		const row = new MessageActionRow()
+		var row = new ActionRowBuilder()
 			.addComponents(
-					new MessageSelectMenu()
+					new StringSelectMenuBuilder()
 						.setCustomId('style')
 						.setPlaceholder('Timestamp Style')
 						.addOptions([
@@ -136,17 +103,17 @@ module.exports = {
 
 		const regexp = /:[tTdDfFR]/g;
 
-		const collector = message.createMessageComponentCollector({ componentType: 'SELECT_MENU', time:15000 });
+		const collector = message.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time:15000 });
 		collector.on('collect', i => {
-			if (!i.isSelectMenu()) return;
+			if (!i.isStringSelectMenu()) return;
 			console.log(i.values[0]);
 			i.update({ content: message.content.replaceAll(regexp, `:${i.values[0]}`) });
 		});
 
 		collector.on('end', collected => {
 			console.log('Ended collection');
-			row.components[0].disabled = true;
-			interaction.editReply({ components: [row] });
+			row.components[0].setDisabled = true;
+			interaction.editReply({ components: [] });
 		});
 	},
 };

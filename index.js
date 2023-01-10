@@ -1,16 +1,22 @@
 const fs = require('node:fs');
 const path = require('node:path');
-
-// Require the necessary discord.js classes
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 
-// Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// Attach all event handlers
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	client.commands.set(command.data.name, command);
+}
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
@@ -22,17 +28,4 @@ for (const file of eventFiles) {
 	}
 }
 
-// Get commands
-client.commands = new Collection();
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-
-	client.commands.set(command.data.name, command);
-}
-
-// Login to Discord with your client's token
 client.login(token);

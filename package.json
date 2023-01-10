@@ -1,6 +1,6 @@
 {
   "name": "timebot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "discord time utility",
   "main": "index.js",
   "scripts": {
@@ -9,9 +9,9 @@
   "author": "glyndekari",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/builders": "^0.15.0",
-    "@discordjs/rest": "^0.5.0",
-    "discord-api-types": "^0.36.1",
-    "discord.js": "^13.8.1"
+    "@discordjs/builders": "^1.4.0",
+    "@discordjs/rest": "^1.5.0",
+    "discord-api-types": "^0.37.25",
+    "discord.js": "^14.7.1"
   }
 }
