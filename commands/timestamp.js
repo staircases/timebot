@@ -24,6 +24,10 @@ module.exports = {
 		.addStringOption(option =>
 			option.setName('timezone')
 				.setDescription('The time zone of the timestamp, in hours ahead or behind UTC. Defaults to 0.')
+				.setRequired(false))
+		.addBooleanOption( option =>
+			option.setName('hidden')
+				.setDescription('Whether or not the bot\'s response should be visible to only you.')
 				.setRequired(false)),
 	async execute(interaction) {
 		var row = new ActionRowBuilder()
@@ -93,7 +97,8 @@ module.exports = {
 
 		timestamp = Date.UTC(year, month - 1, date, hours - timezoneHours, minutes - timezoneMinutes) / 1000;
 
-		await interaction.reply({ content: `<t:${timestamp}:f> \n \`<t:${timestamp}:f>\` `, components: [row] });
+		const hidden = interaction.options.getBoolean('hidden') ?? false;
+		await interaction.reply({ content: `<t:${timestamp}:f> \n \`<t:${timestamp}:f>\` `, components: [row], ephemeral: hidden });
 		const message = await interaction.fetchReply();
 
 		const regexp = /:[tTdDfFR]/g;
